@@ -4,6 +4,17 @@
     <string name="app_name">Test_vocal</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_voice_recognition">VoiceRecognition</string>
+    <string name="btSpeak">Speak</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_voice_recognition">Voice Recognition</string>
+    <string name="tvTextMatches">Text Matches</string>
+    <string name="tap_on_mic">Tappez sur le mic pour parler</string>
+    <string name="btn_backButtonText">Back</string>
+    <string name="InputNotif_EN">"You just said: "</string>
+    <string name="InputNotif_FR">"Vous avez dit: "%1$s</string>
+    <string name="LaunchAppKeyword_FR">ouvrir</string>
+    <string name="LaunchAppKeyword_EN">open</string>
+    <!--<string name="NoWifiNotif">"Wifi désactif "</string>-->
+
 
 </resources>
