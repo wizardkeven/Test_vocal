@@ -21,15 +21,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static android.speech.tts.TextToSpeech.*;
+import static android.speech.tts.TextToSpeech.LANG_MISSING_DATA;
+import static android.speech.tts.TextToSpeech.LANG_NOT_SUPPORTED;
+import static android.speech.tts.TextToSpeech.OnInitListener;
+import static android.speech.tts.TextToSpeech.SUCCESS;
 
 
 public class VoiceRecognition extends Activity implements View.OnClickListener,OnInitListener {
 
 
-   private String localLanguage = Locale.getDefault().getLanguage();
+    private String localLanguage = Locale.getDefault().getLanguage();
     private TextView outputText = null;
     private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
+    public static final ArrayList<String> commandKeyWordSet = new ArrayList<String>(){{
+        add(String.valueOf(R.string.LaunchAppKeyword_FR));
+                add( String.valueOf(R.string.LaunchCameroKeyWord_FR));
+                        add(String.valueOf(R.string.LaunchMessageKeyWord_FR));
+                                add(String.valueOf(R.string.LaunchTelephoneKeyWord_FR));
+}};
+
+
 
     //text to speech definition
     private TextToSpeech tts;
@@ -42,6 +53,8 @@ public class VoiceRecognition extends Activity implements View.OnClickListener,O
         ImageButton speakButton = (ImageButton) findViewById(R.id.btn_speak);
         Button backHomeButton = (Button) findViewById(R.id.btn_back);
         outputText = (TextView) findViewById(R.id.text_output);
+        Log.e("testLog","nianiania");
+        Log.d("testLog 2", "nianiania 2");
         speakButton.setOnClickListener(new speakOnClickListner());
         backHomeButton.setOnClickListener(new backHomeButtenClickListener());
     }
@@ -150,14 +163,13 @@ public class VoiceRecognition extends Activity implements View.OnClickListener,O
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
 
         String wordStr;
         String[] words;
         String firstWord;
         String robotNotif;
 //        String secondWord;
-
         switch (requestCode){
             case VOICE_RECOGNITION_REQUEST_CODE:{
                 if(resultCode == RESULT_OK && null != data){
@@ -168,13 +180,12 @@ public class VoiceRecognition extends Activity implements View.OnClickListener,O
                     //print the vocal input
                     outputText.setText(robotNotif);
                     words = wordStr.split(" ");
-                    firstWord = words[0];
+                    firstWord = words[0].toLowerCase();
 //                    robotNotif = (localLanguage.toLowerCase() == "fr")
 //                            ? getString(R.string.InputNotif_FR) : getString(R.string.InputNotif_EN);
-
-                    speakOut(robotNotif);
-                    if (firstWord.toLowerCase().equals(getString(R.string.LaunchAppKeyword_FR)) && words.length>1){
-                        vocalCommandHandler(words);
+                    speakOut(robotNotif); // Echo the vocal input
+                    if (commandKeyWordSet.contains(firstWord)) {
+                        if ((words.length > 1)) vocalCommandHandler(words);
                     }
                 }
                 break;
@@ -183,34 +194,31 @@ public class VoiceRecognition extends Activity implements View.OnClickListener,O
     }
 
     private void vocalCommandHandler(String[] words) {
-//        String[] words;
         String appName = words[1];
-//        String firstWord;
-//        String secondWord;
-//        words = wordStr.split(" ");
-//        firstWord = words[1];
-//        secondWord = words[2];
+        String command = words[0];
         if(words.length>2){
             for (int i=0;i<words.length-2;i++) {
-                appName.concat(words[i+2]);
+                appName=appName.concat(words[i+2]);
+//                Log.e("wordsLength", words.length + "");
+//                Log.e("word[2]",words[2]);
             }
         }
-
-//        Toast t;
-//        t = Toast.makeText(getApplicationContext(),
-//                "L'appli a ouvrir est:"+appName,
-//                Toast.LENGTH_SHORT);
-//        t.show();
+        Log.e("inputAppName",appName);
+        DetectSpecialApp(command,appName);
         PackageManager packageManager = getPackageManager();
         List<PackageInfo> packs = packageManager.getInstalledPackages(0);
         int size = packs.size();
         for (int v = 0; v < size; v++) {
             PackageInfo p = packs.get(v);
+            //application name is just a lable adapting to the different environment
             String tmpAppName = p.applicationInfo.loadLabel(packageManager).toString();
+            Log.e("Vocal",tmpAppName);
+            //the package name who is unique
             String pname = p.packageName;
 //                urlAddress = urlAddress.toLowerCase();
-//            tmpAppName = formalizeAppName(tmpAppName);
-            tmpAppName = tmpAppName.toLowerCase();
+            tmpAppName = formalizeAppName(tmpAppName);
+//            tmpAppName = tmpAppName.toLowerCase();
+
 //            Toast t;
 //            t = Toast.makeText(getApplicationContext(),
 //                    "L'appli a ouvrir est:"+appName+" "+tmpAppName,
@@ -219,12 +227,13 @@ public class VoiceRecognition extends Activity implements View.OnClickListener,O
 
             if (tmpAppName.trim().toLowerCase().equals(appName.trim().toLowerCase())) {
                 PackageManager pm = this.getPackageManager();
-                Log.d("VocalCommandHandler",tmpAppName);
                 Intent appStartIntent = pm.getLaunchIntentForPackage(pname);
 
                 if (null != appStartIntent) {
                     try {
                         this.startActivity(appStartIntent);
+                        Log.e("VocalCommandtmpAppName", tmpAppName);
+//                        Log.e("VocalCommandpname",pname);
                     } catch (Exception ignored) {
 
                     }
@@ -234,22 +243,71 @@ public class VoiceRecognition extends Activity implements View.OnClickListener,O
     } // end of activityOnResult method
 
     /*
+
+     */
+    private void DetectSpecialApp(String command, String appName) {
+        String appNMToOpen = appName.toLowerCase();
+        switch (command){
+            case "prendre":
+                if(appName=="unephoto"){
+                    OpenCameraPhotoService();
+                }else if (appName == "unevideo"){
+                    OpenCameraVideoService();
+                }else break;
+            case "appeler":
+                //TODO
+                break;
+            default:break;
+
+        }
+    }
+
+    /*
+    Open the camera service
+    Take a piece of video
+     */
+    private void OpenCameraVideoService() {
+        //TODO
+    }
+
+    /*
+    Open the camera service
+    Take a photo and save locally
+     */
+    private void OpenCameraPhotoService() {
+        //TODO
+    }
+
+    /*
     This method will assemble the application name in a word without space and bar
      @author:Guokai
      */
-//    private String formalizeAppName(String wordStr) {
-//        String formalizedAppName;
-//        String[] words = wordStr.split(" ");
-//        formalizedAppName = words[0];
-//        for (int namePointer=1;!words[namePointer].isEmpty();namePointer++){
-//            formalizedAppName.concat(words[namePointer]);
-//        }
-//
-//        if(formalizedAppName.contains("-")){
-//            formalizedAppName.replace("-","");
-//        }
-//        return formalizedAppName;
-//    }
+    public String formalizeAppName(String wordStr) {
+        String formalizedAppName=wordStr;
+        if  (formalizedAppName.contains(" ")){
+            formalizedAppName=formalizedAppName.replace(" ","");
+        }
+        if(formalizedAppName.contains("-")){
+            formalizedAppName=formalizedAppName.replace("-","");
+        }
+        if (formalizedAppName.contains("'")){
+            formalizedAppName=formalizedAppName.replace("'","");
+        }
+
+        if(formalizedAppName.contains("[")){
+            formalizedAppName=formalizedAppName.replace("[","");
+        }
+        if(formalizedAppName.contains("]")){
+            formalizedAppName=formalizedAppName.replace("]","");
+        }
+        if(formalizedAppName.contains(".")){
+            formalizedAppName=formalizedAppName.replace(".","");
+        }
+        if(formalizedAppName.contains("/")){
+            formalizedAppName=formalizedAppName.replace("/","");
+        }
+        return formalizedAppName.toLowerCase();
+    }
 
     /*
     Text to speech parametered by a string

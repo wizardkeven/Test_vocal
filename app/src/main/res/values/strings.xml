@@ -14,6 +14,10 @@
     <string name="InputNotif_FR">"Vous avez dit: "%1$s</string>
     <string name="LaunchAppKeyword_FR">ouvrir</string>
     <string name="LaunchAppKeyword_EN">open</string>
+    <string name="title_activity_main_activity2">MainActivity2Activity</string>
+    <string name="LaunchTelephoneKeyWord_FR">appeler</string>
+    <string name="LaunchMessageKeyWord_FR">envoyer</string>
+    <string name="LaunchCameroKeyWord_FR">prendre</string>
     <!--<string name="NoWifiNotif">"Wifi désactif "</string>-->
 
 
