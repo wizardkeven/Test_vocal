@@ -34,10 +34,10 @@ public class VoiceRecognition extends Activity implements View.OnClickListener,O
     private TextView outputText = null;
     private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
     public static final ArrayList<String> commandKeyWordSet = new ArrayList<String>(){{
-        add(String.valueOf(R.string.LaunchAppKeyword_FR));
-                add( String.valueOf(R.string.LaunchCameroKeyWord_FR));
-                        add(String.valueOf(R.string.LaunchMessageKeyWord_FR));
-                                add(String.valueOf(R.string.LaunchTelephoneKeyWord_FR));
+        add("ouvrir");
+                add( "prendre");
+                        add("envoyer");
+                                add("appeler");
 }};
 
 
@@ -53,8 +53,8 @@ public class VoiceRecognition extends Activity implements View.OnClickListener,O
         ImageButton speakButton = (ImageButton) findViewById(R.id.btn_speak);
         Button backHomeButton = (Button) findViewById(R.id.btn_back);
         outputText = (TextView) findViewById(R.id.text_output);
-        Log.e("testLog","nianiania");
-        Log.d("testLog 2", "nianiania 2");
+        Log.e("testLog", "nianiania");
+//        Log.d("testLog 2", "nianiania 2");
         speakButton.setOnClickListener(new speakOnClickListner());
         backHomeButton.setOnClickListener(new backHomeButtenClickListener());
     }
@@ -184,7 +184,8 @@ public class VoiceRecognition extends Activity implements View.OnClickListener,O
 //                    robotNotif = (localLanguage.toLowerCase() == "fr")
 //                            ? getString(R.string.InputNotif_FR) : getString(R.string.InputNotif_EN);
                     speakOut(robotNotif); // Echo the vocal input
-                    if (commandKeyWordSet.contains(firstWord)) {
+                    boolean condi = false;
+                    if (condi=commandKeyWordSet.contains(firstWord)) {
                         if ((words.length > 1)) vocalCommandHandler(words);
                     }
                 }
@@ -204,7 +205,12 @@ public class VoiceRecognition extends Activity implements View.OnClickListener,O
             }
         }
         Log.e("inputAppName",appName);
-        DetectSpecialApp(command,appName);
+        boolean normalOpenApp = DetectSpecialApp(command, appName);
+
+        if (!normalOpenApp){
+            return;
+        }
+
         PackageManager packageManager = getPackageManager();
         List<PackageInfo> packs = packageManager.getInstalledPackages(0);
         int size = packs.size();
@@ -245,21 +251,28 @@ public class VoiceRecognition extends Activity implements View.OnClickListener,O
     /*
 
      */
-    private void DetectSpecialApp(String command, String appName) {
+    private boolean DetectSpecialApp(String command, String appName) {
         String appNMToOpen = appName.toLowerCase();
+        boolean NotNormalCommand = false;
+        String temp = "unephoto";
         switch (command){
             case "prendre":
-                if(appName=="unephoto"){
+                if(appNMToOpen.equals(getString(R.string.VocalCommandKeywordUnePhoto_FR))){
                     OpenCameraPhotoService();
-                }else if (appName == "unevideo"){
+                    break;
+                }else if (appNMToOpen.equals(getString(R.string.VocalCommandKeywordUnevideo_FR))){
                     OpenCameraVideoService();
-                }else break;
+                } break;
             case "appeler":
                 //TODO
+
+                break;
+            case "ouvrir":
+                NotNormalCommand = true;
                 break;
             default:break;
-
         }
+        return NotNormalCommand;
     }
 
     /*
@@ -268,6 +281,7 @@ public class VoiceRecognition extends Activity implements View.OnClickListener,O
      */
     private void OpenCameraVideoService() {
         //TODO
+        speakOut("Ouverture d'appareil vidéo en cours");
     }
 
     /*
@@ -276,6 +290,7 @@ public class VoiceRecognition extends Activity implements View.OnClickListener,O
      */
     private void OpenCameraPhotoService() {
         //TODO
+        speakOut("Ouverture d'appareil photo en cours");
     }
 
     /*

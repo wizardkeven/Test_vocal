@@ -18,6 +18,8 @@
     <string name="LaunchTelephoneKeyWord_FR">appeler</string>
     <string name="LaunchMessageKeyWord_FR">envoyer</string>
     <string name="LaunchCameroKeyWord_FR">prendre</string>
+    <string name="VocalCommandKeywordUnePhoto_FR">unephoto</string>
+    <string name="VocalCommandKeywordUnevideo_FR">unevidéo</string>
     <!--<string name="NoWifiNotif">"Wifi désactif "</string>-->
 
 
